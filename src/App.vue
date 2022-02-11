@@ -101,10 +101,10 @@ export default {
   },
   watch: {
     newToDo(val) {
-      this.validateInput(val)
+      this.validateInput(val, { maxLength: 100 })
     },
     editableToDo(val) {
-      this.validateInput(val)
+      this.validateInput(val, { maxLength: 100 })
     }
   },
   methods: {
@@ -114,11 +114,11 @@ export default {
     saveToDoList(list) {
       window.localStorage.setItem('todo', JSON.stringify(list || this.toDoList))
     },
-    validateInput(val) {
-      if (!val) {
+    validateInput(val, { required, maxLength }) {
+      if (required && !val) {
         this.error = 'Field is required'
         return false
-      } else if (val.length > 100) {
+      } else if (maxLength !== undefined && val && val.length > maxLength) {
         this.error = 'The length must be no more than 100'
         return false
       } else {
@@ -172,7 +172,8 @@ export default {
       })
     },
     handleAddNewTodo() {
-      if (!this.newToDo || !this.validateInput(this.newToDo)) {
+      const validate = this.validateInput(this.newToDo, { required: true, maxLength: 100 })
+      if (!this.newToDo || !validate) {
         return
       }
       const savedToDo = this.getSavedToDo()
@@ -204,7 +205,8 @@ export default {
       this.handleAddNewTodoModalClose()
     },
     handleEditToDoItem() {
-      if (!this.validateInput(this.editableToDo)) {
+      const validate = this.validateInput(this.editableToDo, { required: true, maxLength: 100 })
+      if (!validate) {
         return
       }
       if (this.editableToDo !== this.editableToDoItem.value) {
